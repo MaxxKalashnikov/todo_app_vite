@@ -1,16 +1,18 @@
-import './Home.css';
 import axios from 'axios'
 import {useState, useEffect} from 'react'
-import TodoList from './components/TodoList.jsx'
-const url = 'http://localhost:3001/'
+import TodoList from '../components/TodoList.jsx'
+import { useUser } from '../context/useUser.jsx';
+const url = import.meta.env.VITE_API_URL
 
 function Home() {
+  const {user} = useUser()
   const [todos, setTodos] = useState([])
   const [newTodo, setNewTodo] = useState("")
   const [loading, setLoading] = useState("Loading...")
 
   useEffect(()=>{
-    axios.get(url + 'get')
+    const headers = {headers: {Authorization: user.token}}
+    axios.get(url + '/get', headers)
     .then(data => {
       setTodos(data.data)
       setLoading("")
@@ -21,11 +23,12 @@ function Home() {
 
   function addNewTodo(event){
     event.preventDefault()
+    const headers = {headers: {Authorization: user.token}}
     setTodos(prevTodos => prevTodos.concat({id: -1, description: "Adding a new task..."}))
     if(newTodo !== ""){
-      axios.post(url + 'addnewtask', {
+      axios.post(url + '/addnewtask', {
         description: newTodo
-      })
+      }, headers)
       .then(data => {
         console.log(data.data)
         setTodos(prevTodos => prevTodos.filter(item => item.id !== -1).concat(data.data))

@@ -1,12 +1,15 @@
 import axios from "axios"
+import { useUser } from "../context/useUser"
 const url = 'http://localhost:3001/'
 
 export default function TodoList({todos, setTodos}) {
+    const {user} = useUser()
     function deleteTask(deletedItem){
+        const headers = {headers: {Authorization: user.token}}
         console.log(deletedItem)
         setTodos(prevTodos => prevTodos.filter(item => item.id !== deletedItem.id).concat({ id: -2, description: "Deleting a task..."}))
 
-        axios.delete(url + 'deletetask/' + deletedItem.id)
+        axios.delete(url + 'deletetask/' + deletedItem.id, headers)
         .then(data => {
             console.log(data.data)
             //add notification
@@ -15,9 +18,15 @@ export default function TodoList({todos, setTodos}) {
             alert(e.response.data.error ? e.response.data.error : e)
         })
     }
+    function editTask(elementToEdit){
+        return 0;
+    }
     return (
         <ul>
-            {todos.map(item => <li key={item.id}>{item.description} <button onClick={() => deleteTask(item)}>Delete</button></li>)}
+            {todos.map(item => <li key={item.id}>{item.description} 
+                <button onClick={() => deleteTask(item)}>Delete</button>
+                <button onClick={() => editTask(item)}>Edit</button>
+                </li>)}
         </ul>
     )
 }
