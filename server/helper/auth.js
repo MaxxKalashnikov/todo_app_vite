@@ -3,7 +3,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 const { verify } = jwt
 const authorizationRequired = 'Authorization required!'
-const invalidCredentials = "Incalid credentials!"
+const invalidCredentials = "Invalid credentials!"
+const expiredToken = "Token expired!"
 
 const auth = (req, res, next) => {
     if(!req.headers.authorization){
@@ -13,10 +14,15 @@ const auth = (req, res, next) => {
         try {
             const token = req.headers.authorization
             verify(token, process.env.JWT_SECRET_KEY)
-            next()
+            next()    
         } catch (error) {
-            res.statusMessage = invalidCredentials
-            res.status(403).json({message: invalidCredentials})
+            if (error instanceof jwt.TokenExpiredError) {
+                res.statusMessage = expiredToken
+                return res.status(403).json({ message: expiredToken });
+            } else {
+                res.statusMessage = invalidCredentials
+                return res.status(403).json({message: invalidCredentials})
+            }
         }
     }
 }

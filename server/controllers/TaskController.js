@@ -4,7 +4,7 @@ import { emptyOrRows } from "../helper/utils.js";
 async function getTasks(req, res, next){
     try {
         const result = await selectAllTasks()
-        res.status(200).json(emptyOrRows(result))
+        return res.status(200).json(emptyOrRows(result))
     } catch (error) {
         return next(error)
     }
@@ -18,7 +18,7 @@ async function postTask(req, res, next) {
             return next(error)
         }
         const result = await insertTask(req.body.description)
-        res.status(200).json(result.rows[0])
+        return res.status(200).json(result.rows[0])
     } catch (error) {
         return next(error)
     }
@@ -32,7 +32,7 @@ async function deleteTask(req, res, next) {
             return next(error)
         }
         const result = await deleteTaskById(req.params.id)
-        res.status(200).json(result.rows[0])
+        return res.status(200).json(result.rows[0])
     } catch (error) {
         return next(error)
     }

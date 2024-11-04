@@ -146,4 +146,58 @@ describe('POST register', () => {
         expect(data).to.be.an('object')
         expect(data).to.include.all.keys('id', 'email', 'token')
     })
+
+    it('should not post a user with a password shorter than 8 characters', async() => {
+        const email = 'exaaxe@mymail.com'
+        const password = 'pass'
+        insertTestUser(email, password)
+        const response = await fetch(base_url + 'user/register', {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: email, password: password })
+        })
+        const data = await response.json()
+
+        expect(response.status).to.be.equal(400, data.error)
+        expect(data).to.be.an('object')
+        expect(data).to.include.all.keys('error')
+    })
+
+    it('should not post a user with an empty email', async() => {
+        const email = ''
+        const password = 'password8c'
+        insertTestUser(email, password)
+        const response = await fetch(base_url + 'user/register', {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: email, password: password })
+        })
+        const data = await response.json()
+
+        expect(response.status).to.be.equal(400, data.error)
+        expect(data).to.be.an('object')
+        expect(data).to.include.all.keys('error')
+    })
+
+    it('should not let user to sign in if credentials are invalid', async() => {
+        const email = 'testinvalid@mymail.com'
+        const password = 'passwordAgain'
+        insertTestUser(email, password)
+        const response = await fetch(base_url + 'user/login', {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: email, password: 'anotherpassword' })
+        })
+        const data = await response.json()
+
+        expect(response.status).to.be.equal(401, data.error)
+        expect(data).to.be.an('object')
+        expect(data).to.include.all.keys('error')
+    })
 })

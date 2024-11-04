@@ -14,7 +14,7 @@ export default function UserProvider({children}) {
         const headers = {headers: {"Content-Type": 'application/json'}}
         try {
             await axios.post(url + '/user/register', json, headers)
-            setUser({email: '',password: ''})
+            setUser({email: '', password: ''})
         } catch(error) {
             throw error
         }
@@ -28,13 +28,22 @@ export default function UserProvider({children}) {
             setUser(response.data)
             sessionStorage.setItem("user", JSON.stringify(response.data))
         }catch(error) {
-            setUser({email: '',password: ''})
+            setUser({email: '', password: ''})
+            throw error
+        }
+    }
+
+    const logOut = () => {
+        try {
+            sessionStorage.removeItem('user');
+            setUser({email: '', password: ''})
+        } catch(error) {
             throw error
         }
     }
 
         return (
-            <UserContext.Provider value={{user, setUser, signUp, signIn}}>
+            <UserContext.Provider value={{user, setUser, signUp, signIn, logOut}}>
                 { children }
             </UserContext.Provider>
         )

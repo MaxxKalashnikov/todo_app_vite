@@ -2,7 +2,7 @@ import axios from "axios"
 import { useUser } from "../context/useUser"
 const url = 'http://localhost:3001/'
 
-export default function TodoList({todos, setTodos}) {
+export default function TodoList({todos, setTodos, setNotificationMessage}) {
     const {user} = useUser()
     function deleteTask(deletedItem){
         const headers = {headers: {Authorization: user.token}}
@@ -15,7 +15,8 @@ export default function TodoList({todos, setTodos}) {
             //add notification
             setTodos(prevTodos => prevTodos.filter(item => item.id !== -2))
         }).catch(e => {
-            alert(e.response.data.error ? e.response.data.error : e)
+            // alert(e.response.data.error ? e.response.data.error : e)
+            setNotificationMessage("You session has been expired. Please log out and sign in again")
         })
     }
     function editTask(elementToEdit){

@@ -23,7 +23,7 @@ const router = createBrowserRouter([
     element: <ProtectedRoute/>,
     children: [
       {
-        path: 'pipi',
+        path: '',
         element: <Home/>
       }
     ]

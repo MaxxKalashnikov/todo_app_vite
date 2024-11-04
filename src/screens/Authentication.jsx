@@ -18,8 +18,8 @@ export default function Authentication({authenticationMode}) {
                 await signUp()
                 navigate('/signin')
             }else{
-                await signIn()
-                navigate('/pipi')
+                await signIn() 
+                navigate('/')
             }
         } catch (error) {
             const message = error.response && error.response.data ? error.response.data.error : error

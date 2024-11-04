@@ -2,13 +2,16 @@ import axios from 'axios'
 import {useState, useEffect} from 'react'
 import TodoList from '../components/TodoList.jsx'
 import { useUser } from '../context/useUser.jsx';
+import { Navigate, Outlet } from "react-router-dom";
+import ErrorNotification from '../components/ErrorNotification.jsx';
 const url = import.meta.env.VITE_API_URL
 
 function Home() {
-  const {user} = useUser()
+  const {user, logOut} = useUser()
   const [todos, setTodos] = useState([])
   const [newTodo, setNewTodo] = useState("")
   const [loading, setLoading] = useState("Loading...")
+  const [norificationMessage, setNotificationMessage] = useState('')
 
   useEffect(()=>{
     const headers = {headers: {Authorization: user.token}}
@@ -17,7 +20,8 @@ function Home() {
       setTodos(data.data)
       setLoading("")
     }).catch(e => {
-      alert(e.response.data.error ? e.response.data.error : e)
+      //alert(e.response.data.error ? e.response.data.error : e)
+      setNotificationMessage("You session has expired. Please log out and sign in again")
     })
   }, [])
 
@@ -34,7 +38,8 @@ function Home() {
         setTodos(prevTodos => prevTodos.filter(item => item.id !== -1).concat(data.data))
         setNewTodo('')
       }).catch(e => {
-        alert(e.response.data.error ? e.response.data.error : e)
+        // alert(e.response.data.error ? e.response.data.error : e)
+        setNotificationMessage("You session has expired. Please log out and sign in again")
       })
     }else(
       alert("the task is empty")
@@ -43,7 +48,9 @@ function Home() {
 
   return (
     <div id="container">
+      <ErrorNotification message={norificationMessage}/>
       <h3>Todos</h3>
+      <button onClick={() => logOut()}>Log out</button>
       <form onSubmit={(event) => addNewTodo(event)}>
         <input 
           type="text" 
@@ -59,7 +66,7 @@ function Home() {
         <button type="submit">Add</button>
       </form>
       <div>{loading}</div>
-      <TodoList todos={todos} setTodos={setTodos}/>
+      <TodoList todos={todos} setTodos={setTodos} setNotificationMessage={setNotificationMessage}/>
     </div>
   );
 }
