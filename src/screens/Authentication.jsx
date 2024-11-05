@@ -1,6 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom' 
-//import './Authentication.css'
+import { useState } from 'react'
+import ErrorNotification from '../components/ErrorNotification.jsx'
 import { useUser } from '../context/useUser'
+import '../styles/Authentication.css'
 
 export const AuthenticationMode = Object.freeze({
     Login: 'Login',
@@ -8,6 +10,8 @@ export const AuthenticationMode = Object.freeze({
 })
 
 export default function Authentication({authenticationMode}) {
+    const [notificationMessage, setNotificationMessage] = useState(null)
+    const [type, setType] = useState("")
     const {user, setUser, signUp, signIn} = useUser()
     const navigate = useNavigate()
 
@@ -17,17 +21,27 @@ export default function Authentication({authenticationMode}) {
             if(authenticationMode === AuthenticationMode.Register){
                 await signUp()
                 navigate('/signin')
+                setNotificationMessage('New account has been created successfully!')
+                setTimeout(() => {
+                    setNotificationMessage(null)
+                }, 3000)
             }else{
                 await signIn() 
                 navigate('/')
             }
         } catch (error) {
             const message = error.response && error.response.data ? error.response.data.error : error
-            alert(message)
+            setNotificationMessage(message)
+            setType('error')
+            setTimeout(() => {
+                setNotificationMessage(null)
+                setType('')
+              }, 3000)
         }
     }
     return (
-        <div>
+        <div className='auth'>
+            <ErrorNotification message={notificationMessage} type={type}/>
             <h3>{authenticationMode === AuthenticationMode.Login ? 'Sign in' : 'Sign up'}</h3>
             <form onSubmit={handleSubmit}>
                 <div>

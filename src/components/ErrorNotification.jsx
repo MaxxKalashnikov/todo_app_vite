@@ -1,10 +1,11 @@
-const ErrorNotification = ({ message }) => {
+import '../styles/Error.css'
+const ErrorNotification = ({ message, type }) => {
     if (message === null) {
       return null
     }
   
     return (
-      <div className='error'>
+      <div className={type === 'error' ? 'error' : 'notify'}>
         {message}
       </div>
     )

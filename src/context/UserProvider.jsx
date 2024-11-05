@@ -9,6 +9,14 @@ export default function UserProvider({children}) {
     const userfromSessionStorage = sessionStorage.getItem('user')
     const [user, setUser] = useState(userfromSessionStorage ? JSON.parse(userfromSessionStorage) : {email: '', password: ''})
 
+    const getToken = () => {
+        const token = JSON.parse(sessionStorage.getItem('user'))
+        if(token.token){
+            return token.token
+        }
+        return null
+    }
+
     const signUp = async () => {
         const json = JSON.stringify(user)
         const headers = {headers: {"Content-Type": 'application/json'}}
@@ -43,7 +51,7 @@ export default function UserProvider({children}) {
     }
 
         return (
-            <UserContext.Provider value={{user, setUser, signUp, signIn, logOut}}>
+            <UserContext.Provider value={{user, setUser, signUp, signIn, logOut, getToken}}>
                 { children }
             </UserContext.Provider>
         )

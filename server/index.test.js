@@ -7,27 +7,26 @@ describe('GET tasks', () => {
         initializeTestDb()
     })
 
-    insertTestUser("get@mymail.com", "veryStrongPassword")
-    const token = getToken("get@mymail.com")
+    const token = getToken("example1@mymail.com")
     it('should get all tasks', async() => {
         const response = await fetch(base_url + 'get', {
-            method: 'get',
+            method: 'post',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: token
             },
+            body: JSON.stringify({ email: "example1@mymail.com" })
         })
         const data = await response.json()
 
         expect(response.status).to.equal(200)
         expect(data).to.be.an('array').that.is.not.empty
-        expect(data[0]).to.include.all.keys('id', 'description')
+        expect(data[0]).to.include.all.keys('id', 'description', 'isdone')
     })
 })
 
 describe('DELETE a task', () => {
-    insertTestUser("delete@mymail.com", "veryStrongPassword")
-    const token = getToken("delete@mymail.com")
+    const token = getToken("example1@mymail.com")
     it('should delete a task', async() => {
         const response = await fetch(base_url + 'deletetask/1', {
             method: 'delete',
@@ -35,6 +34,7 @@ describe('DELETE a task', () => {
                 'Content-Type': 'application/json',
                 Authorization: token
             },
+            body: JSON.stringify({email: "example1@mymail.com"})
         })
         const data = await response.json()
 
@@ -62,7 +62,7 @@ describe('DELETE a task', () => {
 describe('POST task', () => { 
     insertTestUser("post@mymail.com", "veryStrongPassword")
     const token = getToken("post@mymail.com")
-
+    const token2 = getToken('example1@mymail.com')
     it('should add new task', async() => {
         const response = await fetch(base_url + 'addnewtask', {
             method: 'post',
@@ -70,7 +70,7 @@ describe('POST task', () => {
                 'Content-Type': 'application/json',
                 Authorization: token
             },
-            body: JSON.stringify({ description: "task from test" })
+            body: JSON.stringify({ description: "task from test", email: "example1@mymail.com" })
         })
         const data = await response.json()
 
@@ -111,6 +111,43 @@ describe('POST task', () => {
         expect(data).to.be.an('object')
         expect(data).to.include.all.keys('error')
     })
+})
+
+describe('PUT task', () => {
+    const token = getToken("example2@mymail.com")
+    it('should change isdone status', async() => {
+        const response = await fetch(base_url + 'setdone', {
+            method: 'put',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: token
+            },
+            body: JSON.stringify({ newStatus: true, id: 5})
+        });
+        
+        const data = await response.json();
+    
+        expect(response.status).to.equal(200);
+        expect(data).to.be.an('object');
+        expect(data).to.include.all.keys('id', 'description', 'user_email', 'isdone');
+    });
+
+    it('should not change isdone status if parameters in request are invalid', async() => {
+        const response = await fetch(base_url + 'setdone', {
+            method: 'put',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: token
+            },
+            body: JSON.stringify({ newStatus: undefined})
+        });
+        
+        const data = await response.json();
+    
+        expect(response.status).to.equal(400);
+        expect(data).to.be.an('object');
+        expect(data).to.include.all.keys('error');
+    });
 })
 
 describe('POST register', () => {
