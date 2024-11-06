@@ -46,16 +46,16 @@ export default function Authentication({authenticationMode}) {
             <form onSubmit={handleSubmit}>
                 <div>
                     <label>Email</label>
-                    <input type='email' value={user.email} onChange={event => setUser({...user, email: event.target.value})}/>
+                    <input id='email_field' type='email' value={user.email} onChange={event => setUser({...user, email: event.target.value})}/>
                 </div>
                 <div>
                     <label>Password</label>
-                    <input type='password' value={user.password} onChange={event => setUser({...user, password: event.target.value})}/>
+                    <input id='password_field' type='password' value={user.password} onChange={event => setUser({...user, password: event.target.value})}/>
                 </div>
                 <div>
-                    <button>{authenticationMode === AuthenticationMode.Login ? 'Login' : 'Submit'}</button>
+                    <button id={authenticationMode === AuthenticationMode.Login ? 'Login' : 'Submit'}>{authenticationMode === AuthenticationMode.Login ? 'Login' : 'Submit'}</button>
                 </div>
-                <div>
+                <div id='switch'>
                     <Link to={authenticationMode === AuthenticationMode.Login ? '/signup' : '/signin'}>
                         {authenticationMode === AuthenticationMode.Login ? 'No account? Sign up' : 'Already signed up? Sign in'}
                     </Link>
